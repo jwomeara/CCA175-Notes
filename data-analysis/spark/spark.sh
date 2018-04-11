@@ -6,6 +6,33 @@
 # Run a local instance with 2 threads
 spark-shell --master local[2]
 
+# Running spark-shell on a cluster
+spark-shell --master yarn
+
+# set amount of memory per executor
+--executor-memory 2G
+
+#================================================================================================
+# SPARK SUBMIT OPTIONS
+#================================================================================================
+# Run a local instance with 2 threads
+spark-submit \
+    --class "SimpleApp" \
+    --master local[2] \
+    path/to/spark/app.jar
+
+# Running on a cluster in client mode
+spark-submit \
+    --class "SimpleApp" \
+    --master yarn-client \
+    path/to/spark/app.jar
+
+# Running on a cluster in client mode
+spark-submit \
+    --class "SimpleApp" \
+    --master yarn-cluster \
+    path/to/spark/app.jar
+
 #================================================================================================
 # DATA INPUT
 #================================================================================================
@@ -41,6 +68,9 @@ spark> textFile.count()
 # return an array of the first n elements
 spark> textFile.take(n)
 
+# return n samples of the elements
+spark> textFile.takeSample(n)
+
 # return an array of all elements
 spark> textFile.collect()
 
@@ -59,6 +89,19 @@ spark> myRdd.countByKey()
 # for each
 spark> myRdd.forEach(data => data.doSomething)
 
+## Double RDD Actions
+# Sum
+spark> myRdd.sum()
+
+# Mean
+spark> myRdd.mean()
+
+# Variance
+spark> myRdd.variance()
+
+# Std. Deviation
+spark> myRdd.stddev()
+
 #================================================================================================
 # RDD TRANSFORMATIONS
 #================================================================================================
@@ -73,6 +116,9 @@ spark> textFile.filter(line => line.contains("spark"))
 spark> val wordCounts = textFile.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey((a, b) => a + b)
 spark> wordCounts.collect()
 
+# create an rdd that is a sampling of the original rdd
+spark> textFile.sample(n)
+
 # Combine two datasets
 spark> dataSet1.union(dataSet2)
 
@@ -82,9 +128,36 @@ spark> dataSet1.intersection(dataSet2)
 # Compute the distinct elements of two datasets
 spark> dataSet1.distinct(dataSet2)
 
+# Cartesian (creates all combinations between the two sets)
+spark> dataSet1.cartesian(dataSet2)
+
+# Subtract - removes supplied elements (rdd2) from rdd1
+spark> rdd1.subtract(rdd2)
+
+# Zip (pairs up the sets)
+spark> dataSet1.zip(dataSet2)
+
 #================================================================================================
 # RDD KEY-WISE TRANSFORMATIONS
 #================================================================================================
+# Map values
+spark> tupleData.mapValues(val => val.operation())
+
+# Flat map values
+spark> tupleData.flatMapValues(val => val.toManyVals())
+
+# Key by
+spark> rowData.keyBy(line => line.split(" ")(0))
+
+# Return keys
+spark> tupleData.keys()
+
+# Return values
+spark> tupleData. rows()
+
+# count by key
+spark> tupleData.countByKey()
+
 # Reduce by key for key-value pairs
 # NOTE: Returns a tuple.  Function operates on value data
 spark> tupleData.reduceByKey(a, b) => a + b)
@@ -118,9 +191,6 @@ spark> dataSet.fullOuterJoin(otherDataSet)
 # Co-Group
 # NOTE: combines(K, V) and (K, W) by key, and returns (K, (Iterable<V>, Iterable<W>))
 spark> dataSet1.coGroup(dataSet2)
-
-# Cartesian (pairs up the sets)
-spark> dataSet1.cartesian(dataSet2)
 
 #================================================================================================
 # PASSING NAMED FUNCTIONS
@@ -156,11 +226,15 @@ object SimpleApp {
   def main(args: Array[String]) {
     val logFile = "YOUR_SPARK_HOME/README.md" // Should be some file on your system
     val conf = new SparkConf().setAppName("Simple Application")
+    
     val sc = new SparkContext(conf)
+
     val logData = sc.textFile(logFile, 2).cache()
     val numAs = logData.filter(line => line.contains("a")).count()
     val numBs = logData.filter(line => line.contains("b")).count()
     println("Lines with a: %s, Lines with b: %s".format(numAs, numBs))
+    
+    sc.stop()
   }
 }
 #################################################################################################

@@ -1,9 +1,10 @@
 # Spark SQL Notes
 
 #================================================================================================
-# CREATE SQL CONTEXT
+# CREATE SQL/HIVE CONTEXT
 #================================================================================================
-spark> val sqlContext = new SQLContext(sc)
+spark> val sqlCtx = new SQLContext(sc)
+spark> val hiveCtx = new HiveContext(sc)
 
 #================================================================================================
 # LOADING AND SAVING DATAFRAMES
@@ -24,6 +25,11 @@ spark> val jsonDF = sqlContext.read.json("/path/to/some/file.json")
 spark> val parquetDF = sqlContext.read.format("parquet").load("/path/to/some/files*.parquet")
 spark> val parquetDF = sqlContext.read.parquet("/path/to/some/files*.parquet")
 
+### Load JDBC ###
+spark> val accountsDF = sqlContext.load("jdbc", \
+    Map("url"-> "jdbc:mysql://dbhost/dbname?user=username&password=pass",
+    "dbtable" -> "accounts")) 
+
 ## SAVE OPERATIONS ##
 ### Save Generic DataFrame ###
 spark> df.write.save("/path/to/my/saved/data.[txt,json,parquet]")
@@ -40,24 +46,60 @@ spark> df.write.format("json").option("compression", "<gzip, bzip2, snappy>").sa
 spark> df.write.format("parquet").save("/path/to/my/saved/file.parquet")
 spark> df.write.format("parquet").option("compression", "<gzip, bzip2, snappy>").save("/path/to/my/saved/file.json")
 
+### Write JDBC ###
+val prop = new java.util.Properties
+prop.setProperty("driver", "com.mysql.jdbc.Driver")
+prop.setProperty("user", "root")
+prop.setProperty("password", "pw") 
+
+//jdbc mysql url - destination database is named "data"
+val url = "jdbc:mysql://localhost:3306/data"
+ 
+//destination database table 
+val table = "sample_data_table"
+
+spark> df.write.mode().jdbc(url, table, prop)
+
+### Save as a Hive Table ###
+# NOTE: Only possible with HiveContext
+spark> df.write.format("parquet").mode(<append, overwrite, ignore>).options("compression", "snappy").saveAsTable("tableName")
 
 #================================================================================================
 # BASIC DATAFRAME OPERATIONS
 #================================================================================================
 # View a dataframe
-spark> dataFrame.show()
+spark> dataFrame.show(n)
+
+# Collect
+spark> dataFrame.collect()
+
+# Take
+spark> dataFrame.take(n)
+
+# Count
+spark> dataFrame.count()
 
 # View the schema
 spark> dataFrame.printSchema()
 
 # Select a column and show it
+# TODO: Slides say to use triple quotes.  This may be specific to HiveContext
 spark> dataFrame.select("name").show()
 
 # Select everybody, and increment age by 1
 spark> dataFrame.select(dataFrame("name"), dataFrame("age") + 1).show()
 
+# Limit
+spark> dataFrame.select(dataFrame("name"), dataFrame("age") + 1).limit(2).show()
+
 # Select using a filter
 spark> dataFrame.filter(dataFrame("age") > 21).show()
+
+# Select using where
+spark> dataFrame.select("age", "name").where("age > 10").show()
+
+# Sort data
+spark> dataFrame.sort(dataFrame("name").asc)
 
 # Count by a column
 spark> dataFrame.groupBy("age").count().show()
