@@ -99,6 +99,13 @@ hive> CREATE TABLE tableName
             {"name":"order_date", "type":"string"}
           ]}');
 
+# Create a table, stored as avro
+hive> CREATE EXTERNAL TABLE tableName
+    STORED AS AVRO
+    TBLPROPERTIES ('avro.schema.url'=
+        'hdfs:/loudacre/sqoop_import_accounts.avsc')
+    LOCATION '/user/hive/warehouse/tableName';
+          
 # Create a table, stored as avro, with snappy compression
 # TODO: Try this!!!!
 hive> SET hive.exec.compress.output=true;

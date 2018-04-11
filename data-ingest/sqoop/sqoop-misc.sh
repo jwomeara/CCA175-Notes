@@ -1,6 +1,7 @@
 # SQOOP Miscellaneous Commands Notes
 
 # Create a hive table without any data
+# NOTE: This doesn't seem to work for bzip2 compressed avro data
 sqoop create-hive-table --connect jdbc:mysql://hostname:port/dbname --username user --password pass \
     --table "sqlTable" \
     --hive-table "hiveTable"

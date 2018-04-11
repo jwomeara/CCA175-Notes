@@ -53,7 +53,7 @@ sqoop import --connect jdbc:mysql://hostname:port/database --username user --pas
 sqoop import --connect jdbc:mysql://hostname:port/database --username user --password pass \
     -m #mappers \
     --table tableName \
-    --encolsed-by \\' \
+    --enclosed-by \" \
     --fields-terminated-by \t \
     --lines-terminated-by \r \
     --as-textfile \
