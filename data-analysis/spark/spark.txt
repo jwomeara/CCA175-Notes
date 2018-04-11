@@ -1,0 +1,32 @@
+# Spark notes
+
+#================================================================================================
+# SPARK SHELL OPTIONS
+#================================================================================================
+# Run a local instance with 2 threads
+spark-shell --master local[2]
+
+#================================================================================================
+# DATA INPUT
+#================================================================================================
+# read a text file into a value
+spark> val textFile = sc.textFile("someFile.txt")
+
+#================================================================================================
+# RDD METHODS
+#================================================================================================
+# count the lines in a text file
+spark> textFile.count()
+
+# get the first line of the text file
+spark> textFile.first()
+
+# filter lines according to lambda
+spark> textFile.filter(line => line.contains("spark"))
+
+# map and reduce data
+spark> textFile.map(line => line.split(" ").size).reduce((a, b) => Math.max(a, b))
+
+# flat map - one to many mapping
+spark> val wordCounts = textFile.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey((a, b) => a + b)
+spark> wordCounts.collect()
