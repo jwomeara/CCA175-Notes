@@ -153,7 +153,7 @@ spark> rowData.keyBy(line => line.split(" ")(0))
 spark> tupleData.keys()
 
 # Return values
-spark> tupleData. rows()
+spark> tupleData.rows()
 
 # count by key
 spark> tupleData.countByKey()
