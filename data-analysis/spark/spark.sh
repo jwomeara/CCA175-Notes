@@ -74,14 +74,11 @@ spark> textFile.takeSample(n)
 # return an array of all elements
 spark> textFile.collect()
 
-# save as text file
-spark> textFile.map(line => line.split(" ").size).reduce((a, b) => Math.max(a, b)).saveAsTextFile("someFile.txt")
-
 # get the first line of the text file
 spark> textFile.first()
 
 # reduce a mapped dataset
-spark> val reduced = textFile.map(lines => lines.toUpper()).reduce((a, b) => a + b)
+spark> myRdd.reduce((a, b) => a + b)
 
 # count by key
 spark> myRdd.countByKey()
@@ -107,90 +104,92 @@ spark> myRdd.stddev()
 #================================================================================================
 
 # map and reduce data
-spark> textFile.map(line => line.split(" ").size).reduce((a, b) => Math.max(a, b))
+spark> myRdd \
+    .map(line => line.split(" ").size) \
+    .reduce((a, b) => Math.max(a, b))
 
 # filter lines according to lambda
-spark> textFile.filter(line => line.contains("spark"))
+spark> myRdd \
+    .filter(line => line.contains("spark"))
 
 # flat map - one to many mapping
-spark> val wordCounts = textFile.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey((a, b) => a + b)
-spark> wordCounts.collect()
+spark> myRdd \
+    .flatMap(line => line.split(" "))
 
 # create an rdd that is a sampling of the original rdd
-spark> textFile.sample(n)
+spark> myRdd.sample(n)
 
 # Combine two datasets
-spark> dataSet1.union(dataSet2)
+spark> myRdd.union(otherRdd)
 
 # Compute intersection of two datasets
-spark> dataSet1.intersection(dataSet2)
+spark> myRdd.intersection(otherRdd)
 
-# Compute the distinct elements of two datasets
-spark> dataSet1.distinct(dataSet2)
+# Compute the distinct elements between two datasets
+spark> myRdd.distinct(otherRdd)
 
 # Cartesian (creates all combinations between the two sets)
-spark> dataSet1.cartesian(dataSet2)
+spark> myRdd.cartesian(otherRdd)
 
 # Subtract - removes supplied elements (rdd2) from rdd1
-spark> rdd1.subtract(rdd2)
+spark> myRdd.subtract(otherRdd)
 
 # Zip (pairs up the sets)
-spark> dataSet1.zip(dataSet2)
+spark> myRdd.zip(otherRdds)
 
 #================================================================================================
 # RDD KEY-WISE TRANSFORMATIONS
 #================================================================================================
 # Map values
-spark> tupleData.mapValues(val => val.operation())
+spark> pairRdd.mapValues(val => val.upper())
 
 # Flat map values
-spark> tupleData.flatMapValues(val => val.toManyVals())
+spark> pairRdd.flatMapValues(val => val.split(" "))
 
 # Key by
-spark> rowData.keyBy(line => line.split(" ")(0))
+spark> myRdd.keyBy(line => line.split(" ")(0))
 
 # Return keys
-spark> tupleData.keys()
+spark> pairRdd.keys()
 
 # Return values
-spark> tupleData.rows()
+spark> pairRdd.rows()
 
 # count by key
-spark> tupleData.countByKey()
+spark> pairRdd.countByKey()
 
 # Reduce by key for key-value pairs
 # NOTE: Returns a tuple.  Function operates on value data
-spark> tupleData.reduceByKey(a, b) => a + b)
+spark> pairRdd.reduceByKey(a, b) => a + b)
 
 # Group by key
 # NOTE: Transforms (K, V) to (K, Iterable<V>)
-spark> dataSet.groupByKey()
+spark> pairRdd.groupByKey()
 
 # Aggregate by key
 # NOTE: Transforms (K, V) to (K, FUNC(V))
-spark> dataSet.aggregateByKey(0)((accum, v) => accum + v, (v1, v2) => v1 + v2)
+spark> pairRdd \
+    .aggregateByKey(0)((accum, v) => accum + v, (v1, v2) => v1 + v2)
 
 # Sort by key
 ## Ascending
-spark> dataSet.sortByKey(true)
+spark> pairRdd.sortByKey(true)
 ## Descending
-spark> dataSet.sortByKey(false)
+spark> pairRdd.sortByKey(false)
 
-# TODO: Test this when both sides have multiple keys with the same value
-# Join
 # NOTE: joins (K, V) with (K, W) as (K, (V, W))
 ## INNER JOIN
-spark> dataSet.join(otherDataSet)
+spark> pairRdd.join(otherPairRdd)
 ## LEFT OUTER JOIN
-spark> dataSet.leftOuterJoin(otherDataSet)
+spark> pairRdd.leftOuterJoin(otherPairRdd)
 ## RIGHT OUTER JOIN
-spark> dataSet.rightOuterJoin(otherDataSet)
+spark> pairRdd.rightOuterJoin(otherPairRdd)
 ## FULL OUTER JOIN
-spark> dataSet.fullOuterJoin(otherDataSet)
+spark> pairRdd.fullOuterJoin(otherPairRdd)
 
 # Co-Group
 # NOTE: combines(K, V) and (K, W) by key, and returns (K, (Iterable<V>, Iterable<W>))
-spark> dataSet1.coGroup(dataSet2)
+spark> pairRdd.coGroup(otherPairRdd)
 
 #================================================================================================
 # PASSING NAMED FUNCTIONS

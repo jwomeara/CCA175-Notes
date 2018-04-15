@@ -27,7 +27,7 @@ spark> val parquetDF = sqlContext.read.parquet("/path/to/some/files*.parquet")
 
 ### Load JDBC ###
 spark> val accountsDF = sqlContext.load("jdbc", \
-    Map("url"-> "jdbc:mysql://dbhost/dbname?user=username&password=pass",
+    Map("url"-> "jdbc:mysql://host:port/database?user=username&password=pass",
     "dbtable" -> "accounts")) 
 
 ## SAVE OPERATIONS ##
@@ -52,11 +52,11 @@ prop.setProperty("driver", "com.mysql.jdbc.Driver")
 prop.setProperty("user", "root")
 prop.setProperty("password", "pw") 
 
-//jdbc mysql url - destination database is named "data"
-val url = "jdbc:mysql://localhost:3306/data"
+//jdbc mysql url
+val url = "jdbc:mysql://host:port/database"
  
 //destination database table 
-val table = "sample_data_table"
+val table = "tableName"
 
 spark> df.write.mode().jdbc(url, table, prop)
 
@@ -156,9 +156,3 @@ spark> peopleDF.registerTempTable("people")
 
 // use a select statement to generate a new DataFrame
 spark> people.sql("SELECT * FROM people WHERE age > 12 AND age < 20")
-
-#================================================================================================
-# PROGRAMMATIC SQL QUERIES
-#================================================================================================
-#Run a SQL select statement
-spark> dataFrame.sql("SELECT * FROM table")

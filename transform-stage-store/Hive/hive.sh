@@ -13,22 +13,22 @@ hcat
 # BEELINE SHELL COMMANDS
 #================================================================================================
 # Quit beeline
-!exit
+hive> !exit
 
 # Access help
-!help
+hive> !help
 
 #================================================================================================
 # HIVE METADATA COMMANDS
 #================================================================================================
 # Use this when a new table is added
-INVALIDATE METADATA;
+hive> INVALIDATE METADATA;
 
 # Use this when data is added to a table
-REFRESH tableName;
+hive> REFRESH tableName;
 
 # Use this when a table has changed significantly
-INVALIDATE METADATA tableName;
+hive> INVALIDATE METADATA tableName;
 
 #================================================================================================
 # HIVE CREATE/DROP DATABASE COMMANDS
@@ -71,20 +71,19 @@ BINARY
 hive> CREATE TABLE tableName (field1 INT, field2 STRING);
 
 # Create a partitioned table in Hive
-hive> CREATE TABLE tableName (field1 INT, field2 STRING) PARTITIONED BY (field3 STRING) \
+hive> CREATE TABLE tableName (field1 INT, field2 STRING)
+    PARTITIONED BY (field3 STRING)
     ROW FORMAT DELIMETED
     FIELDS TERMINATED BY ',';
 
 # Create a table, stored as text, using tab delimeter
-hive> CREATE TABLE tableName (field1 INT, field2 STRING) \
+hive> CREATE TABLE tableName (field1 INT, field2 STRING)
     ROW FORMAT DELIMETED
     FIELDS TERMINATED BY '\t'
     STORED AS TEXTFILE;
 
 # Create a table, stored as sequencefile, using tab delimeter
-hive> CREATE TABLE tableName (field1 INT, field2 STRING) \
-    ROW FORMAT DELIMETED
-    FIELDS TERMINATED BY '\t'
+hive> CREATE TABLE tableName (field1 INT, field2 STRING)
     STORED AS SEQUENCEFILE;
 
 # Create a table, stored as avro
@@ -107,7 +106,6 @@ hive> CREATE EXTERNAL TABLE tableName
     LOCATION '/user/hive/warehouse/tableName';
           
 # Create a table, stored as avro, with snappy compression
-# TODO: Try this!!!!
 hive> SET hive.exec.compress.output=true;
 hive> SET avro.output.codec=snappy;
 hive> CREATE TABLE tableName
@@ -124,33 +122,33 @@ hive> CREATE TABLE tableName
         'hive.exec.compress.output'='true');
 
 # Create a table, stored as parquet
-hive> CREATE TABLE tableName \
+hive> CREATE TABLE tableName
     STORED AS PARQUET;
 
 # Create a table, stored as parquet, with compression set to snappy
-hive> CREATE TABLE tableName \
+hive> CREATE TABLE tableName
     STORED AS PARQUET;
 hive> SET PARQUET_COMPRESSION_CODEC=snappy;
 OR
 hive> SET parquet.compression=snappy
 
 # ALTERNATIVELY, create a table, stored as parquet, with compression set to snappy
-hive> CREATE TABLE tableName \
-    STORED AS PARQUET \
+hive> CREATE TABLE tableName
+    STORED AS PARQUET
     TBLPROPERTIES ('parquet.compression'='snappy');
 
 # CTAS - Create table as select
 hive> CREATE TABLE newTable AS SELECT field1, field2, field3 FROM otherTable WHERE field1 = 'banana';
 
 # Create table and store at specified location
-hive> CREATE TABLE tableName (field1 INT, field2 STRING) \
+hive> CREATE TABLE tableName (field1 INT, field2 STRING)
     ROW FORMAT DELIMETED
     FIELDS TERMINATED BY ','
     STORED AS TEXTFILE
     LOCATION '/some/hdfs/path';
 
 # Create a table based on external data
-hive> CREATE EXTERNAL TABLE tableName (field1 INT, field2 STRING) \
+hive> CREATE EXTERNAL TABLE tableName (field1 INT, field2 STRING)
     LOCATION '/some/hdfs/path'
 
 # Create a table based on an existing table definition
@@ -167,7 +165,7 @@ hive> LOAD DATA LOCAL INPATH './some/local/path/data.txt' OVERWRITE INTO TABLE t
 # NOTE: OVERWRITE indicates that the existing table will be deleted before data is inserted
 hive> LOAD DATA LOCAL INPATH './some/local/path/data.txt' OVERWRITE INTO TABLE tableName PARTITION (field3="partitionValue");
 
-# Simple copy data to the table's directory in HDFS
+# Alternatively, simply copy data to the table's directory in HDFS
 hdfs dfs -mv /some/hdfs/path /the/table/path
 
 #================================================================================================
@@ -193,28 +191,31 @@ hive> DROP TABLE tableName;
 hive> SHOW PARTITIONS tableName;
 
 # Add a partition to a table
-hive> ALTER TABLE tableName \
+hive> ALTER TABLE tableName
     ADD PARTITION (partField='partValue')
     LOCATION '/hdfs/path/to/tableName/partValue';
     
 # Drop a partition from a table
-hive> ALTER TABLE tableName \
+hive> ALTER TABLE tableName
     DROP PARTITION (partField='partValue');
 
 #================================================================================================
 # HIVE ALTER TABLE COMMANDS
 #================================================================================================
 # Rename a table
-hive> ALTER TABLE tableName RENAME TO otherTableName;
+hive> ALTER TABLE tableName 
+    RENAME TO otherTableName;
 
 # Add columns to a table
 # NOTE: This only changes the schema, not the underlying data
-hive> ALTER TABLE tableName ADD COLUMNS (field3 INT, field4 STRING);
+hive> ALTER TABLE tableName 
+    ADD COLUMNS (field3 INT, field4 STRING);
 
 # Replace columns in a table
 # NOTE: Provide a list of the columns as you want them to be
 # NOTE: This only changes the schema, not the underlying data
-hive> ALTER TABLE tableName REPLACE COLUMNS (field1 INT, field2 STRING, replacedField INT);
+hive> ALTER TABLE tableName 
+    REPLACE COLUMNS (field1 INT, field2 STRING, replacedField INT);
 
 #================================================================================================
 # HIVE SQL COMMANDS
