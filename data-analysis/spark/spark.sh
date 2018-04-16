@@ -171,6 +171,16 @@ spark> pairRdd.groupByKey()
 spark> pairRdd \
     .aggregateByKey(0)((accum, v) => accum + v, (v1, v2) => v1 + v2)
 
+# Aggregate by Key Example
+var rddResult = productsDF.map(x=>(x(1).toString.toInt,x(4).toString.toDouble)).aggregateByKey \
+    ((0.0,0.0,0,9999999999999.0)) \
+    ( \
+    (x,y)=>(math.max(x._1,y),x._2+y,x._3+1,math.min(x._4,y)), \
+    (x,y)=>(math.max(x._1,y._1),x._2+y._2,x._3+y._3,math.min(x._4,y._4)) \
+    ) \
+    .map(x=> (x._1,x._2._1,(x._2._2/x._2._3),x._2._3,x._2._4)).sortBy(_._1, false);
+rddResult.collect().foreach(println);
+
 # Sort by key
 ## Ascending
 spark> pairRdd.sortByKey(true)
