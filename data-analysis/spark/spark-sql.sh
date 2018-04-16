@@ -117,9 +117,17 @@ spark> someDF.registerTempTable("tableName")
 spark> someDF.select(col("field1").alias("newName"), col("field2"), col("field3"))
 
 #================================================================================================
+# GROUP BY -> AGGREGATION (VERY USEFUL)
+#================================================================================================
+spark> someDF.
+	.groupBy(to_date(from_unixtime(col("order_date")/1000)).alias("order_formatted_date"), col("order_status"))
+	.agg(round(sum("order_item_subtotal"),2).alias("total_amount"), countDistinct("order_id").alias("total_orders"))
+	.orderBy(col("order_formatted_date").desc, col("order_status"), col("total_amount").desc, col("total_orders"));
+
+#================================================================================================
 # TMESTAMP TO DATE HANDLING
 #================================================================================================
-spark> val dates = ordersDF.select(to_date(from_unixtime(ordersDF("order_date")), "YYYY-MM-DD").alias("date")).show
+spark> val dates = ordersDF.select(to_date(from_unixtime(ordersDF("order_date"))).alias("date")).show
 
 #================================================================================================
 # INFERRING DATAFRAME SCHEMA USING REFLECTION
