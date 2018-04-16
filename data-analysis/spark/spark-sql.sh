@@ -113,6 +113,14 @@ spark> val someRdd = someDF.rdd
 # Register a temp table name to a dataframe
 spark> someDF.registerTempTable("tableName")
 
+# Rename a column in a dataframe
+spark> someDF.select(col("field1").alias("newName"), col("field2"), col("field3"))
+
+#================================================================================================
+# TMESTAMP TO DATE HANDLING
+#================================================================================================
+spark> val dates = ordersDF.select(to_date(from_unixtime(ordersDF("order_date")), "YYYY-MM-DD").alias("date")).show
+
 #================================================================================================
 # INFERRING DATAFRAME SCHEMA USING REFLECTION
 #================================================================================================
