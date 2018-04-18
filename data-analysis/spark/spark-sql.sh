@@ -14,16 +14,14 @@ spark> val hiveCtx = new HiveContext(sc)
 spark> val df = sqlContext.read.load("/path/to/any/supported/file.type")
 
 ### Load Avro ###
-spark> val avroDF = sqlContext.read.format("avro").load("/path/to/file.avro")
-spark> val avroDF = sqlContext.read.avro("/path/to/file.avro")
+spark> import com.databricks.spark.avro._;
+spark> val avroDF = sqlContext.read.avro("/path/to/avrofiles")
 
 ### Load JSON ###
-spark> val jsonDF = sqlContext.read.format("json").load("/path/to/some/file.json")
-spark> val jsonDF = sqlContext.read.json("/path/to/some/file.json")
+spark> val jsonDF = sqlContext.read.json("/path/to/some/jsonfiles")
 
 ### Load parquet ###
-spark> val parquetDF = sqlContext.read.format("parquet").load("/path/to/some/files*.parquet")
-spark> val parquetDF = sqlContext.read.parquet("/path/to/some/files*.parquet")
+spark> val parquetDF = sqlContext.read.parquet("/path/to/some/parquetfiles")
 
 ### Load JDBC ###
 spark> val accountsDF = sqlContext.load("jdbc", \
@@ -31,20 +29,31 @@ spark> val accountsDF = sqlContext.load("jdbc", \
     "dbtable" -> "accounts")) 
 
 ## SAVE OPERATIONS ##
-### Save Generic DataFrame ###
-spark> df.write.save("/path/to/my/saved/data.[txt,json,parquet]")
 
-### Write Avro or compressed Avro ###
-spark> df.write.format("avro").save("/path/to/my/saved/file.avro")
-spark> df.write.format("avro").options("compresion", "<gzip, bzip2, snappy>").save("/path/to/my/saved/file.avro")
+### Write Avro ###
+spark> import com.databricks.spark.avro._;
+spark> df.write.avro("/path/to/my/saved/file.avro")
 
-### Write JSON or compressed JSON###
-spark> df.write.format("json").save("/path/to/my/saved/file.json")
-spark> df.write.format("json").option("compression", "<gzip, bzip2, snappy>").save("/path/to/my/saved/file.json")
+### Write Compressed Avro ###
+spark> import com.databricks.spark.avro._;
+spark> sqlContext.setConf("spark.sql.avro.compression.codec", "<uncompressed, snappy>")
+spark> df.write.avro("/save/path")
+
+### Write JSON ###
+spark> df.toJSON.saveAsTextFile("/save/path")
+
+### Write Compressed JSON ###
+spark> df.toJSON.saveAsTextFile("/save/path", classOf[org.apache.hadoop.io.compress.GzipCodec])
 
 ### Write Parquet ###
-spark> df.write.format("parquet").save("/path/to/my/saved/file.parquet")
-spark> df.write.format("parquet").option("compression", "<gzip, bzip2, snappy>").save("/path/to/my/saved/file.json")
+spark> df.write.parquet("/save/path")
+
+### Write Compressed Parquet ###
+spark> sqlContext.setConf("spark.sql.parquet.compression.codec", "<uncompressed, gzip, lzo, snappy>")
+spark> df.write.parquet("/save/path")
+
+### Write Optimized Row Columnar (ORC) data ###
+spark> sequenceData.map(x => {var d = x._2.split("\t"); (d(0), d(1), d(2), d(3))}).toDF("col1", "col2", "col3", "col4").write.orc("/path/to/orcfiles")
 
 ### Write JDBC ###
 val prop = new java.util.Properties

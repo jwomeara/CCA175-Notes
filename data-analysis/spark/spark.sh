@@ -47,14 +47,29 @@ spark> val textData = sc.textFile("/some/path/to/files*.txt")
 # NOTE: Each row corresponds to a specific file, represented as (filename, content)
 spark> val fileData = sc.wholeTextFile("/some/directory/of/files*.txt")
 
+# read a sequence file into an rdd
+# NOTE: How you read this data will be determined by how you wrote this data
+spark> sc.sequenceFile("path/to/sequence/files", classOf[org.apache.hadoop.io.Text], classOf[org.apache.hadoop.io.Text]) \
+    .map(x => (x._1.toString, x._2.toString))
+
 #================================================================================================
 # DATA OUTPUT
 #================================================================================================
 # Save as text file
 spark> myRdd.saveAsTextFile("/path/to/textFile.txt")
 
+# Save as gzip compressed text file
+spark> myRdd.saveAsTextFile("/text/file/path", classOf[org.apache.hadoop.io.compress.GzipCodec])
+
 # Save as sequence file
+# NOTE: RDD must be formatted as org.apache.spark.rdd.RDD[(String, String)] in order to save as a sequence file
+#   RDD[(Int, String)] or RDD[(String, Int)] are also acceptable
+# For Instance: 
+spark> val sequenceRdd = myRdd.map(x => (x(0), x(0) + "," + x(1) + "," + x(2)))
 spark> myRdd.saveAsSequenceFile("/path/to/sequenceFile")
+
+# Save as Gzip Compressed sequence file
+spark> sequenceRdd.saveAsSequenceFile("/path/to/sequencefiles", Option(classOf[org.apache.hadoop.io.compress.GzipCodec])
 
 # Save as object file
 spark> myRdd.saveAsObjectFile("/path/to/objectFile")
