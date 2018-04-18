@@ -36,7 +36,7 @@ spark> df.write.avro("/path/to/my/saved/file.avro")
 
 ### Write Compressed Avro ###
 spark> import com.databricks.spark.avro._;
-spark> sqlContext.setConf("spark.sql.avro.compression.codec", "<uncompressed, snappy>")
+spark> sqlContext.setConf("spark.sql.avro.compression.codec", "org.apache.hadoop.io.compress.SnappyCodec")
 spark> df.write.avro("/save/path")
 
 ### Write JSON ###
@@ -49,7 +49,7 @@ spark> df.toJSON.saveAsTextFile("/save/path", classOf[org.apache.hadoop.io.compr
 spark> df.write.parquet("/save/path")
 
 ### Write Compressed Parquet ###
-spark> sqlContext.setConf("spark.sql.parquet.compression.codec", "<uncompressed, gzip, lzo, snappy>")
+spark> sqlContext.setConf("spark.sql.parquet.compression.codec", "org.apache.hadoop.io.compress.<GzipCodec, LzoCodec, SnappyCodec>")
 spark> df.write.parquet("/save/path")
 
 ### Write Optimized Row Columnar (ORC) data ###
@@ -71,7 +71,7 @@ spark> df.write.mode().jdbc(url, table, prop)
 
 ### Save as a Hive Table ###
 # NOTE: Only possible with HiveContext
-spark> df.write.format("parquet").mode(<append, overwrite, ignore>).options("compression", "snappy").saveAsTable("tableName")
+spark> df.write.format("parquet").mode(<append, overwrite, ignore>).saveAsTable("tableName")
 
 #================================================================================================
 # BASIC DATAFRAME OPERATIONS
