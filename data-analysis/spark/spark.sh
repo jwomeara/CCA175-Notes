@@ -69,7 +69,7 @@ spark> val sequenceRdd = myRdd.map(x => (x(0), x(0) + "," + x(1) + "," + x(2)))
 spark> myRdd.saveAsSequenceFile("/path/to/sequenceFile")
 
 # Save as Gzip Compressed sequence file
-spark> sequenceRdd.saveAsSequenceFile("/path/to/sequencefiles", Option(classOf[org.apache.hadoop.io.compress.GzipCodec])
+spark> sequenceRdd.saveAsSequenceFile("/path/to/sequencefiles", Some(classOf[org.apache.hadoop.io.compress.GzipCodec])
 
 # Save as object file
 spark> myRdd.saveAsObjectFile("/path/to/objectFile")
