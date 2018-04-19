@@ -6,6 +6,9 @@ beeline -u jdbc:hive2://host:port -n username -p password
 # Running a HIVE command from the host CLI
 beeline -u jdbc:hive2://host:port -n username -p password -e 'some command'
 
+# Running hive
+hive
+
 # Running HCatalog CLI
 hcat
 
@@ -19,7 +22,7 @@ hive> !exit
 hive> !help
 
 #================================================================================================
-# HIVE METADATA COMMANDS
+# IMPALA METADATA COMMANDS
 #================================================================================================
 # Use this when a new table is added
 hive> INVALIDATE METADATA;

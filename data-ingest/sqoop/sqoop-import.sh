@@ -88,6 +88,7 @@ sqoop import \
 
 # Incremental import (last modified)
 # NOTE: Used to import all rows after 'last-value' for the specified column
+# NODE: last-modified will add new rows and update while updating the check-column field with the latest last-value
 sqoop import \
     --connect jdbc:mysql://hostname:port/database \
     --username user --password pass \

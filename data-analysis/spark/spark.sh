@@ -65,7 +65,7 @@ spark> myRdd.saveAsTextFile("/text/file/path", classOf[org.apache.hadoop.io.comp
 # NOTE: RDD must be formatted as org.apache.spark.rdd.RDD[(String, String)] in order to save as a sequence file
 #   RDD[(Int, String)] or RDD[(String, Int)] are also acceptable
 # For Instance: 
-spark> val sequenceRdd = myRdd.map(x => (x(0), x(0) + "," + x(1) + "," + x(2)))
+spark> val sequenceRdd = myRdd.map(x => (x(0).toString, x(0) + "," + x(1) + "," + x(2)))
 spark> myRdd.saveAsSequenceFile("/path/to/sequenceFile")
 
 # Save as Gzip Compressed sequence file
@@ -140,8 +140,8 @@ spark> myRdd.union(otherRdd)
 # Compute intersection of two datasets
 spark> myRdd.intersection(otherRdd)
 
-# Compute the distinct elements between two datasets
-spark> myRdd.distinct(otherRdd)
+# Compute the distinct elements in the rdd
+spark> myRdd.distinct()
 
 # Cartesian (creates all combinations between the two sets)
 spark> myRdd.cartesian(otherRdd)
