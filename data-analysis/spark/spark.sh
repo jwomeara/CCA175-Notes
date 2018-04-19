@@ -52,6 +52,11 @@ spark> val fileData = sc.wholeTextFile("/some/directory/of/files*.txt")
 spark> sc.sequenceFile("path/to/sequence/files", classOf[org.apache.hadoop.io.Text], classOf[org.apache.hadoop.io.Text]) \
     .map(x => (x._1.toString, x._2.toString))
 
+# read a compressed sequence file into an rdd
+# NOTE: How you read this data will be determined by how you wrote this data
+spark> sc.sequenceFile("path/to/sequence/files", classOf[org.apache.hadoop.io.Text], classOf[org.apache.hadoop.io.Text], classOf[org.apache.hadoop.io.compress.GzipCodec]) \
+    .map(x => (x._1.toString, x._2.toString))
+
 #================================================================================================
 # DATA OUTPUT
 #================================================================================================
