@@ -201,6 +201,15 @@ var rddResult = productsDF.map(x=>(x(1).toString.toInt,x(4).toString.toDouble)).
     .map(x=> (x._1,x._2._1,(x._2._2/x._2._3),x._2._3,x._2._4)).sortBy(_._1, false);
 rddResult.collect().foreach(println);
 
+# Combine by Key Example
+joinedOrderDataDF
+    .map(x=> ((x(1).toString,x(3).toString),(x(8).toString.toFloat,x(0).toString)))
+    .combineByKey(
+        (x:(Float, String))=>(x._1,Set(x._2)),
+        (x:(Float,Set[String]),y:(Float,String))=>(x._1 + y._1,x._2+y._2),
+        (x:(Float,Set[String]),y:(Float,Set[String]))=>(x._1+y._1,x._2++y._2))
+    .map(x=> (x._1._1,x._1._2,x._2._1,x._2._2.size)).
+
 # Sort by key
 ## Ascending
 spark> pairRdd.sortByKey(true)
